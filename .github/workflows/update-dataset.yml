@@ -82,7 +82,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: newer-dataset-csv
-          path: dataset
+          path: my-spotify-discover-weekly.csv
 
   upload-to-kaggle:
     needs: merge-csvs
