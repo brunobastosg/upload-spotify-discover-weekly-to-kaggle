@@ -1,0 +1,58 @@
+{
+    "title": "My Spotify Discover Weekly",
+    "subtitle": "Songs that Spotify thinks I'll like. Updated weekly.",
+    "description": "'Discover Weekly' is a personalized playlist created for each individual user. It is updated every Monday and consists of 30 songs that Spotify's algorithms believe the user will enjoy based on their listening history, liked songs, and preferences.",
+    "id": "brunobastosg/my-spotify-discover-weekly",
+    "licenses": [
+      {
+        "name": "unknown"
+      }
+    ],
+    "resources": [
+      {
+        "path": "my-spotify-discover-weekly.csv",
+        "description": "Songs from my 'Discover Weekly' playlist",
+        "schema": {
+          "fields": [
+            {
+              "name": "Track Name",
+              "description": "Name or title of the song on Spotify",
+              "type": "string"
+            },
+            {
+              "name": "Track URI",
+              "description": "Unique identifier for each track on Spotify",
+              "type": "string"
+            },
+            {
+              "name": "Artist Name(s)",
+              "description": "Name(s) of the artist(s) who recorded the song",
+              "type": "string"
+            },
+            {
+              "name": "Artist URI(s)",
+              "description": "Unique identifier(s) for the artist(s) on Spotify",
+              "type": "string"
+            },
+            {
+              "name": "Album Name",
+              "description": "Name of the album to which the track belongs",
+              "type": "string"
+            },
+            {
+              "name": "Added At",
+              "description": "Date and time when the track was added to the playlist",
+              "type": "datetime"
+            }
+          ]
+        }
+      }
+    ],
+    "keywords": [
+      "Music",
+      "Tabular",
+      "Beginner",
+      "Data Analytics",
+      "Exploratory Data Analysis"
+    ]
+  }

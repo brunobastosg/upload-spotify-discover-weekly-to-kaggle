@@ -1,0 +1,110 @@
+name: update-dataset
+run-name: Update Dataset
+on:
+  schedule:
+    - cron: "0 4 * * 1" # every monday at 4am UTC
+
+jobs:
+  download-this-weeks-playlist:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v3
+      - name: setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+      - run: pip install -r requirements.txt
+      - name: download this week's playlist
+        env:
+          SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+          SPOTIFY_AUTH_CACHE: ${{ secrets.SPOTIFY_AUTH_CACHE }}
+        run: python download-playlist-from-spotify.py
+      - name: cache spotify auth info
+        id: cache-spotify-auth
+        uses: actions/cache@v3
+        with:
+          path: .cache
+          key: cache-spotify-auth
+      - name: save playlist as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: this-weeks-csv
+          path: output
+
+  download-current-dataset-from-kaggle:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v3
+      - name: setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - run: pip install kaggle
+      - name: download current dataset from kaggle
+        env:
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+        run: kaggle datasets download brunobastosg/my-spotify-discover-weekly -f my-spotify-discover-weekly.csv -p dataset
+      - name: save current dataset as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: current-dataset-csv
+          path: dataset
+
+  merge-csvs:
+    needs: [download-this-weeks-playlist, download-current-dataset-from-kaggle]
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v3
+      - name: get this week's csv from artifact store
+        uses: actions/download-artifact@v3
+        with:
+          name: this-weeks-csv
+          path: output
+      - name: get current dataset's csv from artifact store
+        uses: actions/download-artifact@v3
+        with:
+          name: current-dataset-csv
+          path: dataset
+      - name: setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'    
+          cache: 'pip'
+      - run: pip install -r requirements.txt
+      - run: python merge-csvs.py
+      - name: save merged csv as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: newer-dataset-csv
+          path: dataset
+
+  upload-to-kaggle:
+    needs: merge-csvs
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v3
+      - name: get merged csv from artifact store
+        uses: actions/download-artifact@v3
+        with:
+          name: newer-dataset-csv
+      - name: setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - run: pip install kaggle
+      - run: cp *.csv kaggle/
+      - name: get current date
+        id: get-current-date
+        run: echo "CURRENT_DATE=$(date --date="yesterday" +%Y-%m-%d)" >> $GITHUB_OUTPUT
+      - name: upload datasets
+        env:
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+        run: kaggle datasets version -p kaggle -m "Added playlist for the week of ${{ steps.get-current-date.outputs.CURRENT_DATE }}"
