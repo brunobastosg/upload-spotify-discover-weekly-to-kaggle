@@ -38,6 +38,10 @@ jobs:
     needs: download-this-weeks-playlist
     runs-on: ubuntu-latest
     steps:
+      - name: get this week's csv from artifact store
+        uses: actions/download-artifact@v3
+        with:
+          name: this-weeks-csv
       - name: get current date
         id: get-current-date
         run: echo "CURRENT_DATE=$(date --date="yesterday" +%Y-%m-%d)" >> $GITHUB_OUTPUT
