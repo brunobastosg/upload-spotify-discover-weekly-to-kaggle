@@ -68,7 +68,7 @@ jobs:
         env:
           KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
           KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
-        run: kaggle datasets download brunobastosg/my-spotify-discover-weekly -f my-spotify-discover-weekly.csv -p dataset
+        run: kaggle datasets download ${{ secrets.KAGGLE_USERNAME }}/my-spotify-discover-weekly -f my-spotify-discover-weekly.csv -p dataset
       - name: save current dataset as artifact
         uses: actions/upload-artifact@v3
         with:
