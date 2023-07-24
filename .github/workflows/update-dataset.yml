@@ -51,7 +51,7 @@ jobs:
           credentials: ${{ secrets.GCP_SERVICE_ACCOUNT_CREDENTIALS }}
           filename: "this-weeks-playlist.csv"
           folderId: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
-          name: "semanaTESTE-${{ steps.get-current-date.outputs.CURRENT_DATE }}.csv"
+          name: "semana-${{ steps.get-current-date.outputs.CURRENT_DATE }}.csv"
           overwrite: "true"
 
   download-current-dataset-from-kaggle:
