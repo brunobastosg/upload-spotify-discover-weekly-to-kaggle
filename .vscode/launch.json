@@ -6,7 +6,7 @@
     "configurations": [
         {
             "name": "Local Run - Download From Spotify",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "download-playlist-from-spotify.py",
             "console": "integratedTerminal",
@@ -17,7 +17,7 @@
         },
         {
             "name": "Local Run - Merge CSV's",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "merge-csvs.py",
             "console": "integratedTerminal",
